@@ -1,0 +1,3 @@
+-r requirements.txt
+databricks-sql-connector>=3.4,<5
+snowflake-connector-python>=3.12,<5

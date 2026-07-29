@@ -1,0 +1,26 @@
+PRAGMA foreign_keys = ON;
+CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, city TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE restaurants (id INTEGER PRIMARY KEY, name TEXT NOT NULL, cuisine TEXT NOT NULL, city TEXT NOT NULL, rating REAL NOT NULL, delivery_fee REAL NOT NULL);
+CREATE TABLE menu_items (id INTEGER PRIMARY KEY, restaurant_id INTEGER NOT NULL REFERENCES restaurants(id), name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, available INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), restaurant_id INTEGER NOT NULL REFERENCES restaurants(id), status TEXT NOT NULL, subtotal REAL NOT NULL, delivery_fee REAL NOT NULL, total_amount REAL NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE order_items (id INTEGER PRIMARY KEY, order_id INTEGER NOT NULL REFERENCES orders(id), menu_item_id INTEGER NOT NULL REFERENCES menu_items(id), quantity INTEGER NOT NULL, unit_price REAL NOT NULL);
+CREATE TABLE payments (id INTEGER PRIMARY KEY, order_id INTEGER NOT NULL UNIQUE REFERENCES orders(id), amount REAL NOT NULL, method TEXT NOT NULL, status TEXT NOT NULL, paid_at TEXT);
+CREATE TABLE reviews (id INTEGER PRIMARY KEY, order_id INTEGER NOT NULL UNIQUE REFERENCES orders(id), user_id INTEGER NOT NULL REFERENCES users(id), restaurant_id INTEGER NOT NULL REFERENCES restaurants(id), rating INTEGER NOT NULL, comment TEXT, created_at TEXT NOT NULL);
+CREATE INDEX idx_orders_created_at ON orders(created_at);
+CREATE INDEX idx_orders_restaurant ON orders(restaurant_id);
+CREATE INDEX idx_payments_status ON payments(status);
+
+INSERT INTO users VALUES
+(1,'Aisha Khan','aisha@example.test','Karachi','2026-01-02'),(2,'Omar Ali','omar@example.test','Karachi','2026-01-04'),(3,'Sara Ahmed','sara@example.test','Lahore','2026-01-06'),(4,'Bilal Noor','bilal@example.test','Islamabad','2026-01-09'),(5,'Maya Chen','maya@example.test','Karachi','2026-02-01'),(6,'Hamza Iqbal','hamza@example.test','Lahore','2026-02-07');
+INSERT INTO restaurants VALUES
+(1,'Saffron Table','Pakistani','Karachi',4.7,120),(2,'Green Wok','Chinese','Karachi',4.4,90),(3,'Napoli Corner','Italian','Lahore',4.6,110),(4,'Cedar & Olive','Middle Eastern','Islamabad',4.8,140),(5,'Seoul Bowl','Korean','Karachi',4.5,100);
+INSERT INTO menu_items VALUES
+(1,1,'Chicken Biryani','Mains',620,1),(2,1,'Seekh Kebab','Starters',420,1),(3,1,'Kheer','Dessert',240,1),(4,2,'Kung Pao Chicken','Mains',720,1),(5,2,'Vegetable Dumplings','Starters',380,1),(6,3,'Margherita Pizza','Mains',850,1),(7,3,'Tiramisu','Dessert',390,1),(8,4,'Chicken Shawarma Plate','Mains',760,1),(9,4,'Hummus & Pita','Starters',360,1),(10,5,'Bibimbap','Mains',790,1),(11,5,'Tteokbokki','Starters',490,1);
+INSERT INTO orders VALUES
+(1,1,1,'delivered',1040,120,1160,'2026-06-01T12:20:00'),(2,2,2,'delivered',1100,90,1190,'2026-06-02T19:40:00'),(3,3,3,'delivered',1240,110,1350,'2026-06-03T20:10:00'),(4,4,4,'delivered',1120,140,1260,'2026-06-04T18:30:00'),(5,5,5,'cancelled',1280,100,1380,'2026-06-05T21:05:00'),(6,1,2,'delivered',1440,90,1530,'2026-06-06T13:15:00'),(7,2,1,'delivered',1480,120,1600,'2026-06-07T19:25:00'),(8,6,3,'preparing',850,110,960,'2026-06-08T20:45:00'),(9,5,4,'delivered',1480,140,1620,'2026-06-09T14:10:00'),(10,3,5,'delivered',1580,100,1680,'2026-06-10T21:20:00'),(11,1,1,'delivered',1240,120,1360,'2026-06-11T18:05:00'),(12,4,4,'pending',760,140,900,'2026-06-12T12:00:00'),(13,2,5,'delivered',1280,100,1380,'2026-06-13T20:30:00'),(14,6,3,'delivered',1700,110,1810,'2026-06-14T19:55:00'),(15,5,2,'on_the_way',1100,90,1190,'2026-06-15T13:35:00');
+INSERT INTO order_items VALUES
+(1,1,1,1,620),(2,1,2,1,420),(3,2,4,1,720),(4,2,5,1,380),(5,3,6,1,850),(6,3,7,1,390),(7,4,8,1,760),(8,4,9,1,360),(9,5,10,1,790),(10,5,11,1,490),(11,6,4,2,720),(12,7,1,2,620),(13,7,3,1,240),(14,8,6,1,850),(15,9,8,1,760),(16,9,9,2,360),(17,10,10,2,790),(18,11,1,2,620),(19,12,8,1,760),(20,13,10,1,790),(21,13,11,1,490),(22,14,6,2,850),(23,15,4,1,720),(24,15,5,1,380);
+INSERT INTO payments VALUES
+(1,1,1160,'card','completed','2026-06-01T12:21:00'),(2,2,1190,'wallet','completed','2026-06-02T19:41:00'),(3,3,1350,'card','completed','2026-06-03T20:11:00'),(4,4,1260,'cash','completed','2026-06-04T18:58:00'),(5,5,1380,'card','refunded','2026-06-05T21:06:00'),(6,6,1530,'wallet','completed','2026-06-06T13:16:00'),(7,7,1600,'cash','completed','2026-06-07T19:55:00'),(8,8,960,'card','authorized',NULL),(9,9,1620,'card','completed','2026-06-09T14:11:00'),(10,10,1680,'wallet','completed','2026-06-10T21:21:00'),(11,11,1360,'card','completed','2026-06-11T18:06:00'),(12,12,900,'cash','pending',NULL),(13,13,1380,'wallet','completed','2026-06-13T20:31:00'),(14,14,1810,'card','completed','2026-06-14T19:56:00'),(15,15,1190,'cash','pending',NULL);
+INSERT INTO reviews VALUES
+(1,1,1,1,5,'Rich flavor and careful packaging','2026-06-01'),(2,2,2,2,4,'Fast and fresh','2026-06-02'),(3,3,3,3,5,'Excellent crust','2026-06-03'),(4,4,4,4,5,'Generous portions','2026-06-04'),(5,6,1,2,4,'Good dumplings','2026-06-06'),(6,7,2,1,5,'A favorite','2026-06-07'),(7,9,5,4,4,'Very good hummus','2026-06-09'),(8,10,3,5,5,'Comforting and balanced','2026-06-10'),(9,11,1,1,4,'Reliable dinner','2026-06-11'),(10,13,2,5,4,'Spicy and satisfying','2026-06-13'),(11,14,6,3,5,'Great family meal','2026-06-14');

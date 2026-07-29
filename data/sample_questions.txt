@@ -1,0 +1,8 @@
+Top 5 restaurants by revenue
+What is the average rating by restaurant?
+Show the latest 10 orders
+Give me an order count by status
+Which menu items are most popular?
+Who are the highest spending customers?
+Break down completed payments by method
+How many users are registered?
